@@ -1,5 +1,7 @@
-[![codecov](https://codecov.io/gh/tesla-ce/moodle-plugin/branch/main/graph/badge.svg?token=C0zHLoU7rD)](https://codecov.io/gh/tesla-ce/php-client)
+[![codecov](https://codecov.io/gh/tesla-ce/moodle-plugin/branch/main/graph/badge.svg?token=C0zHLoU7rD)](https://codecov.io/gh/tesla-ce/moodle-plugin)
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B26246%2Fgithub.com%2Ftesla-ce%2Fmoodle-plugin.svg?type=shield)](https://app.fossa.com/projects/custom%2B26246%2Fgithub.com%2Ftesla-ce%2Fmoodle-plugin?ref=badge_shield)
+
 [![Quality gate](https://sonar.sunai.uoc.edu/api/project_badges/quality_gate?project=moodle-plugin)](https://sonar.sunai.uoc.edu/dashboard?id=moodle-plugin)
 
 # TeSLA CE Moodle Plugin
@@ -25,3 +27,5 @@ Credits: Include a section for credits in order to highlight and link to the aut
 ## License
 This project is licensed under [AGPL v3 licence](http://www.gnu.org/licenses/agpl-3.0).
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B26246%2Fgithub.com%2Ftesla-ce%2Fmoodle-plugin.svg?type=large)](https://app.fossa.com/projects/custom%2B26246%2Fgithub.com%2Ftesla-ce%2Fmoodle-plugin?ref=badge_large)
