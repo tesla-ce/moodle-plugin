@@ -128,6 +128,12 @@ jobs:
           fail_ci_if_error: true
           env_vars: OS,PHP
           files: /var/www/html/coverage.xml
+      - name: Fossa update license analysis
+        if: matrix.php-versions == '7.3'
+        uses: fossa-contrib/fossa-action@v1
+        continue-on-error: true
+        with:
+          fossa-api-key: ${{ secrets.FOSSA_API_KEY }}
   sonar:
     needs: build
     name: Sonar
