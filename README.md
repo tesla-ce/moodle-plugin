@@ -1,6 +1,6 @@
 [![codecov](https://codecov.io/gh/tesla-ce/moodle-plugin/branch/main/graph/badge.svg?token=C0zHLoU7rD)](https://codecov.io/gh/tesla-ce/php-client)
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-[![Quality gate](https://sonar.sunai.uoc.edu/api/project_badges/quality_gate?project=tesla-ce_moodle-plugin)](https://sonar.sunai.uoc.edu/dashboard?id=tesla-ce_moodle-plugin)
+[![Quality gate](https://sonar.sunai.uoc.edu/api/project_badges/quality_gate?project=moodle-plugin)](https://sonar.sunai.uoc.edu/dashboard?id=moodle-plugin)
 
 # TeSLA CE Moodle Plugin
 
