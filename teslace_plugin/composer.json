@@ -1,0 +1,14 @@
+{
+    "name": "teslace/moodle_plugin",
+    "type": "library",
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "Roger Muñoz",
+            "email": "roger@rcod.net"
+        }
+    ],
+    "require": {
+      "tesla-ce/client": "0.0.2"
+    }
+}

@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.swarmMode=false"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--serverstransport.insecureskipverify=true"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.email=rmunozber@uoc.edu"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.tesla-tlschallenge.acme.httpchallenge.entrypoint=http"
+      - "--providers.docker.network=backend"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/traefik:/letsencrypt
+    networks:
+      - backend
+  moodle:
+    #entrypoint: /bin/bash
+    #command: ["-ec", "while :; do echo '.'; sleep 5 ; done"]
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.moodle.rule=Host(`moodle.tesla-ce`)"
+      - "traefik.http.routers.moodle.entrypoints=https"
+      - "traefik.http.routers.moodle.tls.certresolver=tesla-tlschallenge"
+      - "traefik.http.services.moodle-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.moodle.service=moodle-service"
+    environment:
+      MOODLE_DBHOST: database
+      MOODLE_DBUSER: moodle
+      MOODLE_DBNAME: moodle
+      MOODLE_DBPASS: moodle
+      MOODLE_DBPORT: 3306
+      MOODLE_DBPREFIX: mdl_
+      CRON_MOODLE_INTERVAL: 15
+      MOODLECFG_SSLPROXY: 1
+      MOODLE_WWWROOT: https://moodle.tesla-ce
+      MOODLE_FULLNAME: TeSLA CE Moodle
+      MOODLE_SHORTNAME: TeSLA CE
+      MOODLE_SUMMARY: TeSLA CE Moodle Instance
+      MOODLE_ADMINUSER: moodle
+      MOODLE_ADMINPASS: moodle
+      MOODLE_ADMINEMAIL: test@tesla-ce.org
+      #API_URL: "https://localhost"
+      MOODLE_DEBUG: 1
+      SENTRY_DSN: https://a4de765bb10b4972986beb6e17dfd4ab@sentry.sunai.uoc.edu/6
+      SENTRY_ENABLED: 1
+    depends_on:
+      - database
+    networks:
+      - backend
+    volumes:
+      - ./teslace_plugin:/var/www/html/local/teslace
+  database:
+    image: mariadb:10.4
+    volumes:
+      - ./data/database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: moodle
+      MYSQL_PASSWORD: moodle
+      MYSQL_DATABASE: moodle
+    networks:
+      - backend
+    ports:
+      - 33306:3306
+networks:
+  frontend: {}
+  backend: {}

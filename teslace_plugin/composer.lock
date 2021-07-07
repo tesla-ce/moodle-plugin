@@ -1,0 +1,64 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "880fa8d794f0c635852a2820968cc3fc",
+    "packages": [
+        {
+            "name": "tesla-ce/client",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tesla-ce/php-client.git",
+                "reference": "c69f04be3c3742b591a05790fadfe0a91af6ef37"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tesla-ce/php-client/zipball/c69f04be3c3742b591a05790fadfe0a91af6ef37",
+                "reference": "c69f04be3c3742b591a05790fadfe0a91af6ef37",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*"
+            },
+            "require-dev": {
+                "phpunit/php-code-coverage": "^9",
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "tesla_ce\\client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Roger",
+                    "email": "roger@rcod.net"
+                }
+            ],
+            "description": "PHP Client SDK for TeSLA CE",
+            "support": {
+                "issues": "https://github.com/tesla-ce/php-client/issues",
+                "source": "https://github.com/tesla-ce/php-client/tree/0.0.2"
+            },
+            "time": "2021-07-06T14:39:22+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.1.0"
+}
