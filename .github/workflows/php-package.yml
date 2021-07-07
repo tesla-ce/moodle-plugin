@@ -19,7 +19,7 @@ jobs:
       - name: Get version values
         id: vars
         run: |
-          echo ::set-output name=version::$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' composer.json)
+          echo ::set-output name=version::$(sed -nE 's/\$plugin->version = (.*?);$/\1/p' teslace_plugin/version.php)
           echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Show captured versions
         run: |
@@ -40,6 +40,23 @@ jobs:
         operating-system: [ ubuntu-latest ] #, windows-latest, macos-latest ]
         php-versions: [ '7.3', '7.4' ]
     runs-on: ${{ matrix.operating-system }}
+    services:
+      # Label used to access the service container
+      db:
+        image: mariadb
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: .TeSLa-C3-password
+          MYSQL_DATABASE: tesla
+          MYSQL_USER: tesla
+          MYSQL_PASSWORD: tesla-password
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 3
+          --name db
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -62,13 +79,41 @@ jobs:
           # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
+
       - name: Install dependencies
         run: |
+          apt-get update && apt-get install -y curl zlib1g-dev zip libpng-dev libzip-dev libpq-dev libcurl4-gnutls-dev libxml2-dev libonig-dev git php-fpm php-zip php-pdo php-pdo-mysql php-gd php-json php-curl php-zip php-mbstring php-xml php-xmlrpc php-soap php-intl ssh-client
+          mkdir -p /var/www/html
+          mkdir -p /var/moodledata
+          mkdir -p /var/moodletestdata
+
+          rm -rf /var/www/html
+          mkdir -p /var/www/html
+          cd /var/www/html
+          git clone -b 'v3.9.4' --single-branch git://git.moodle.org/moodle.git .
+
+          cp teslace_plugin /var/www/html/local/teslace
+
+          cd /var/www/html
+          php /var/www/html/admin/cli/install.php --lang=en  --wwwroot="https://moodle.tesla-ce" --dataroot=/var/moodledata --dbtype=mariadb --dbhost="db" --dbname="tesla" --dbuser="tesla" --dbpass="tesla" --dbport="33069" --prefix="mdl_" --fullname="TeSLA Test" --shortname="TeslaTest" --summary="Tesla CE summary" --adminuser="moodle" --adminpass="moodle" --adminemail="test@tesla-ce.eu" --non-interactive --agree-license --allow-unstable
+          # install Moodle composer
           composer install --no-progress --prefer-dist --optimize-autoloader
-          composer run-script post-install-cmd --no-interaction
+
+          # install moodle-plugin composer
+          cd /var/www/html/local/teslace
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+          # PREPARE MOODLE FOR TESTS
+          cd /var/www/html
+          sed -i "/\\\*wwwroot\\\*/i \$CFG->phpunit_prefix = 'phpu_';\n" /var/www/html/config.php
+          sed -i "/\\\*wwwroot\\\*/i \$CFG->phpunit_dataroot = '/var/moodletestdata';\n" /var/www/html/config.php
+
+          php admin/tool/phpunit/cli/init.php
+          vendor/bin/phpunit teslace_client_testcase local/teslace/tests/teslace_client_testcase.php
+
       # Add a step to run migrations if required
       - name: Test with phpunit
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml tests
+        run: vendor/bin/phpunit teslace_client_testcase local/teslace/tests/teslace_client_testcase.php --coverage-clover==/var/www/html/coverage.xml
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v1.5.0
         if: matrix.operating-system == 'ubuntu-latest'
@@ -80,20 +125,9 @@ jobs:
         with:
           fail_ci_if_error: true
           env_vars: OS,PHP
-          files: ./coverage.xml
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    steps:
-      - name: Store version
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Build package
-        run: |
-          # Publish manually
-          curl -XPOST -H 'content-type:application/json' 'https://packagist.org/api/update-package?username=rogerrcod&apiToken=${{ secrets.PACKAGIST_API_TOKEN}}' -d'{"repository":{"url":"https://packagist.org/packages/tesla-ce/client"}}'
+          files: /var/www/html/coverage.xml
   sonar:
+    needs: build
     name: Sonar
     runs-on: ubuntu-latest
     steps:
