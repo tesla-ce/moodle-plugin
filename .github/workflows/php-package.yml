@@ -175,6 +175,7 @@ jobs:
           composer install
           cd ..
           mv teslace_plugin teslace
+          zip -r tesla-ce-moodle-${{ steps.vars.outputs.version }}.zip teslace
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -195,7 +196,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./teslace
+          asset_path: ./tesla-ce-moodle-${{ steps.vars.outputs.version }}.zip
           asset_name: tesla-ce-moodle-${{ steps.vars.outputs.version }}
           asset_content_type: application/zip
   sonar:
