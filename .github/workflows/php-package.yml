@@ -135,7 +135,7 @@ jobs:
         with:
           fossa-api-key: ${{ secrets.FOSSA_API_KEY }}
   artifact:
-    needs: check
+    needs: build
     strategy:
       fail-fast: false
       matrix:
@@ -175,13 +175,13 @@ jobs:
           composer install
           cd ..
           mv teslace_plugin teslace
-          tar czf tesla-ce-moodle-${{ steps.vars.outputs.version }}.tar.gz teslace
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: tesla-ce-moodle-${{ steps.vars.outputs.version }}.tar.gz
+          name: tesla-ce-moodle-${{ steps.vars.outputs.version }}
           path: |
-            tesla-ce-moodle-${{ steps.vars.outputs.version }}.tar.gz
+            teslace
   sonar:
     needs: build
     name: Sonar
