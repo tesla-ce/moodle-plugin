@@ -15,6 +15,8 @@ RUN rm -rf /var/www/html
 RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
 #RUN git clone --depth=1 tags/$MOODLE_TAG -b $MOODLE_RELEASE git://git.moodle.org/moodle.git .
+COPY MOODLE_VERSION /MOODLE_VERSION
+RUN MOODLE_TAG=$(cat /MOODLE_VERSION) && export MOODLE_TAG
 RUN git clone -b $MOODLE_TAG --single-branch git://git.moodle.org/moodle.git .
 
 COPY teslace_plugin /var/www/html/local/teslace

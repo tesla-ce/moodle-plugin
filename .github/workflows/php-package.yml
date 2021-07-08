@@ -226,12 +226,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Get version values
+        id: vars
+        run: |
+          echo ::set-output name=version::$(sed -nE 's/\$plugin->version = (.*?);$/\1/p' teslace_plugin/version.php)
+          echo ::set-output name=mooodle_version::$(cat MOODLE_VERSION)
+          echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2.5.0
         with:
           push: true
-          tags: teslace/moodle-plugin:${{ steps.vars.outputs.tag }}, teslace/moodle-plugin:latest
+          tags: teslace/moodle-plugin:${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.mooodle_version }}, teslace/moodle-plugin:latest
           file: docker/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
