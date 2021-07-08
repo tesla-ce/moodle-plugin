@@ -182,6 +182,22 @@ jobs:
           name: tesla-ce-moodle-${{ steps.vars.outputs.version }}
           path: |
             teslace
+      - name: Get release
+        if: github.event_name == 'release'
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload release artifact
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./tesla-ce-moodle-${{ steps.vars.outputs.version }}
+          asset_name: tesla-ce-moodle-${{ steps.vars.outputs.version }}
+          asset_content_type: application/zip
   sonar:
     needs: build
     name: Sonar
