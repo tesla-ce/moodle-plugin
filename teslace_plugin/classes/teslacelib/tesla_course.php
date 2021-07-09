@@ -34,14 +34,13 @@ class TeslaCourse {
 
         $course = $this->client->getCourse()->getByVleCourseId($vle_id, $eventdata->id);
 
-        if ($course['headers']['http_code'] == 200) {
+        if ($course['headers']['http_code'] == 200 && count($course['content']['results']) > 0) {
             $course_id = $course['content']['results'][0]['id'];
             $result = $this->client->getCourse()->update($vle_id, $course_id, $eventdata->shortname, $eventdata->id,
                 $eventdata->fullname, $start, $end);
 
         } else {
             // create course, because in TeSLA this course not exists.
-            $course_id = $course['content']['results'][0]['id'];
             $result = $this->client->getCourse()->create($vle_id, $eventdata->shortname, $eventdata->id,
                 $eventdata->fullname, $start, $end);
         }

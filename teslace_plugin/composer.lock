@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "880fa8d794f0c635852a2820968cc3fc",
+    "content-hash": "02484bf6f5124c8daffe0ef83ba900c9",
     "packages": [
         {
             "name": "tesla-ce/client",
-            "version": "0.0.2",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tesla-ce/php-client.git",
-                "reference": "c69f04be3c3742b591a05790fadfe0a91af6ef37"
+                "reference": "95f3f60f951d827df3a447ddfede39700c0316a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tesla-ce/php-client/zipball/c69f04be3c3742b591a05790fadfe0a91af6ef37",
-                "reference": "c69f04be3c3742b591a05790fadfe0a91af6ef37",
+                "url": "https://api.github.com/repos/tesla-ce/php-client/zipball/95f3f60f951d827df3a447ddfede39700c0316a5",
+                "reference": "95f3f60f951d827df3a447ddfede39700c0316a5",
                 "shasum": ""
             },
             "require": {
@@ -47,9 +47,9 @@
             "description": "PHP Client SDK for TeSLA CE",
             "support": {
                 "issues": "https://github.com/tesla-ce/php-client/issues",
-                "source": "https://github.com/tesla-ce/php-client/tree/0.0.2"
+                "source": "https://github.com/tesla-ce/php-client/tree/0.0.4"
             },
-            "time": "2021-07-06T14:39:22+00:00"
+            "time": "2021-07-08T16:17:20+00:00"
         }
     ],
     "packages-dev": [],

@@ -48,3 +48,5 @@ $string['auto_enrol_learner_help'] = 'Auto enrol leaner when he/she enters in Te
 $string['auto_enrol_instructor'] = 'Auto enrol instructor in TeSLA activity';
 $string['auto_enrol_instructor_help'] = 'Auto enrol instructor when he/she enters in TeSLA activity';
 $string['cachedef_tesla_ce_sdk'] = 'This cache is used to cache the configuration of TeSLA CE local plugin';
+$string['floating_menu_initial_pos'] = 'Floating menu initial position';
+$string['floating_menu_initial_pos_help'] = 'Where will floating menu be placed initially?';

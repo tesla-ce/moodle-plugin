@@ -140,30 +140,41 @@ class TeSLACELib{
         }
 
         if ($branch) {
-            $data_url = array('instance_id' => $instance_id, 'context' => 'my_tesla', 'course_id'=>$course_id);
-
-            // Add My TeSLA link in the settings menu
-            $my_tesla_url = new moodle_url('/local/teslace/views/my_tesla.php', $data_url);
+            $my_tesla_url = $this->generate_url_dashboard(null, 'my_tesla', null);
             $branch->add($this->common->get_string('my_tesla_title'), $my_tesla_url, $nav::TYPE_CONTAINER,
                 null, 'tesla_ce_my_tesla_' . $course_id);
+
+            $vle_id = $this->client->getVleId();
+            $course = $this->common->get_course_info();
+
+            $tesla_course_id = $this->get_or_create_course($vle_id, $course);
+            $this->add_user_to_course($course_id, $vle_id, $tesla_course_id);
 
             $is_student = $this->common->is_user_with_role($course_id, TeSLACELibCommon::ROLE_STUDENT, $USER->id);
 
             if (!$is_student) {
                 // Add TeSLA course link inside context course
                 if ($context->contextlevel == CONTEXT_COURSE) {
-                    $data_url['context'] = 'course';
-                    $my_tesla_url = new moodle_url('/local/teslace/views/lti_tesla.php', $data_url);
+                    // $data_url['context'] = 'course';
+                    // $my_tesla_url = new moodle_url('/local/teslace/views/lti_tesla.php', $data_url);
+                    $my_tesla_url = $this->generate_url_dashboard(null, 'course', $tesla_course_id);
                     $branch->add($this->common->get_string('tesla_course'), $my_tesla_url, $nav::TYPE_CONTAINER,
                         null, 'tesla_ce_my_tesla_course_' . $course_id);
                 }
 
                 // Add TeSLA activity link inside context activity
                 if ($context->contextlevel == CONTEXT_MODULE) {
-                    $data_url['context'] = 'activity';
-                    $my_tesla_url = new moodle_url('/local/teslace/views/lti_tesla.php', $data_url);
-                    $branch->add($this->common->get_string('tesla_activity'), $my_tesla_url, $nav::TYPE_CONTAINER,
-                        null, 'tesla_ce_my_tesla_activity_' . $course_id);
+                    // $data_url['context'] = 'activity';
+                    // $my_tesla_url = new moodle_url('/local/teslace/views/lti_tesla.php', $data_url);
+                    $activity = $this->common->get_activity_info_by_instance_id($PAGE->context->instanceid);
+                    $response = $this->client->getActivity()->getByVleActivityIdAndType($vle_id, $tesla_course_id, $activity['id'], $activity['type']);
+
+                    if ($response['headers']['http_code'] == 200 && count($response['content']['results']) > 0) {
+                        $tesla_activity_id = $response['content']['results'][0]['id'];
+                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity', $tesla_course_id);
+                        $branch->add($this->common->get_string('tesla_activity'), $my_tesla_url, $nav::TYPE_CONTAINER,
+                            null, 'tesla_ce_my_tesla_activity_' . $course_id);
+                    }
                 }
             }
         }
@@ -184,17 +195,12 @@ class TeSLACELib{
                 $learner = $this->common->get_learner_info();
 
                 $vle_id = $this->client->getVleId();
-
                 // get course
-                $response = $this->client->getCourse()->getByVleCourseId($vle_id, $course['id']);
+                $course_id = $this->get_or_create_course($vle_id, $course);
+                $redirect_reject_url = null;
+                $locale = $this->common->get_current_language();
 
-                if ($response['headers']['http_code'] == 200 && $response['content']['count'] == 0) {
-                    $response = $this->client->getCourse()->create($vle_id, $course['name'], $course['id'],
-                        $course['description'], $course['start_at'], $course['end_at'] );
-                    $course_id = $response['content']['id'];
-                } else {
-                    $course_id = $response['content']['results'][0]['id'];
-                }
+                $this->add_user_to_course($course['id'], $vle_id, $course_id);
 
                 // get activity, if tesla active continue, if not return null;
                 $response = $this->client->getActivity()->getByVleActivityIdAndType($vle_id, $course_id, $activity['id'], $activity['type']);
@@ -204,44 +210,26 @@ class TeSLACELib{
                     return null;
                 }
 
-                $redirect_reject_url = null;
-                $locale = $this->common->get_current_language();
-
-                $max_ttl = intval(get_config('local_teslace', 'max_ttl'));
-
-                // if user is teacher  and configuration auto-enrol-instructor is enable
-                if (boolval(get_config('local_teslace', 'auto_enrol_instructor')) === true &&
-                    $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true) {
-                        $this->client->getCourse()->addInstructor($vle_id, $course['id'], $learner['email']);
-                }
-                if (boolval(get_config('local_teslace', 'auto_enrol_learner')) === true &&
-                    $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_LEARNER, $USER->id) === true) {
-                        $this->client->getCourse()->addLearner($vle_id, $course['id'], $learner['email']);
-                }
-
-                // learner exists?
-                $response = $this->client->getLearner()->getByUid($vle_id, $course_id, $learner['email']);
-                if ($response['headers']['http_code'] == 200 && $response['content']['count'] == 0) {
-                    // create learner
-                    $response = $this->client->getLearner()->create($vle_id, $course_id, $learner['name'],
-                        $learner['surname'], $learner['email'], $learner['email']);
-                }
-
-                // check informed consent
-                $ic_status = $response['content']['results'][0]['ic_status'];
-
-                if (substr($ic_status, 0, 6) != 'VALID_') {
-                    return $this->lti->lti_go_to('informed_consent', $PAGE->context->instanceid, $course['id'], array());
-                }
-
                 // if user is student then inject capture JS
                 if ($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_STUDENT, $USER->id) === true) {
+                    $response = $this->client->getLearner()->getByUid($vle_id, $course_id, $learner['email']);
+
+                    // check informed consent
+                    $ic_status = $response['content']['results'][0]['ic_status'];
+                    if (substr($ic_status, 0, 6) != 'VALID_') {
+                        return $this->lti->lti_go_to('informed_consent', $PAGE->context->instanceid, $course['id'], array());
+                    }
+
                     $session_id = $this->common->getAssessmentId($activity);
+                    $session_id = null;
                     $reject_message = null;
+                    $max_ttl = intval(get_config('local_teslace', 'max_ttl'));
+
+                    $floating_menu_initial_pos = get_config('local_teslace', 'floating_menu_initial_pos');
 
                     $response = $this->client->getAssessment()->create($vle_id, $course['id'], $activity['id'],
                         $activity['type'], $learner['email'], $max_ttl, $redirect_reject_url, $reject_message, $locale,
-                        $session_id);
+                        $session_id, $floating_menu_initial_pos);
 
                     // check enrolment status
                     if (isset($response['content']['status']) && $response['content']['status'] == 4) {
@@ -271,6 +259,44 @@ class TeSLACELib{
             }
         }
         return null;
+    }
+
+    private function get_or_create_course($vle_id, $course) {
+        $response = $this->client->getCourse()->getByVleCourseId($vle_id, $course['id']);
+
+        if ($response['headers']['http_code'] == 200 && $response['content']['count'] == 0) {
+            $response = $this->client->getCourse()->create($vle_id, $course['name'], $course['id'],
+                $course['description'], $course['start_at'], $course['end_at'] );
+            $tesla_course_id = $response['content']['id'];
+        } else {
+            $tesla_course_id = $response['content']['results'][0]['id'];
+        }
+
+        return $tesla_course_id;
+    }
+
+    private function add_user_to_course($course_id, $vle_id, $tesla_course_id) {
+        global $USER;
+
+        $learner = $this->common->get_learner_info();
+
+        // if user is teacher  and configuration auto-enrol-instructor is enable
+        if (boolval(get_config('local_teslace', 'auto_enrol_instructor')) === true &&
+            $this->common->is_user_with_role($course_id, TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true) {
+            $this->client->getCourse()->addInstructor($vle_id, $tesla_course_id, $learner['email'],
+                $learner['name'], $learner['surname'], $learner['email']);
+        }
+        if (boolval(get_config('local_teslace', 'auto_enrol_learner')) === true &&
+            $this->common->is_user_with_role($course_id, TeSLACELibCommon::ROLE_LEARNER, $USER->id) === true) {
+            $this->client->getCourse()->addLearner($vle_id, $tesla_course_id, $learner['email'],
+                $learner['name'], $learner['surname'], $learner['email']);
+        }
+    }
+
+    private function generate_url_dashboard($instance_id, $context, $course_id) {
+        $data_url = array('instance_id' => $instance_id, 'context' => $context, 'course_id'=>$course_id);
+        // Add My TeSLA link in the settings menu
+        return new moodle_url('/local/teslace/views/my_tesla.php', $data_url);
     }
 
     public function report_exception() {

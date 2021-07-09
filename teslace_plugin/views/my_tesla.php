@@ -29,13 +29,46 @@ $base_endpoint_api = get_config('local_teslace', 'base_url');
 $url = $base_endpoint_api."/api/v2/vle/{$t_lib->client->getVleId()}/launcher/";
 
 $response = $t_lib->client->getVle()->getLauncher($t_lib->client->getVleId(), $learner['email']);
-//$redirect_url = "&redirect_url=".urlencode("/course/1&institution_id=1");
-// $redirect_url = "&redirect_url=/course/1";
-$redirect_url = null;
-if (isset($response['content']['url'])) {
-    header("Location: {$response['content']['url']}{$redirect_url}");
-    exit();
+
+if (!isset($response['content']['url'])) {
+    echo "My TeSLA is not available.";
+    die();
 }
 
-echo "My TeSLA is not available.";
-die();
+$redirect_url = null;
+
+$url = $response['content']['url'];
+$params = array(
+    'id'=>$response['content']['id'],
+    'token'=>$response['content']['token'],
+    'redirect_uri'=>null,
+    'institution_id'=>$t_lib->client->getModule()['vle']['institution']
+);
+
+// extract dashboard URL
+$url_explode = explode('auth', $url);
+$base_url_dashboard = $url_explode[0];
+
+switch($_GET['context']) {
+    case 'my_tesla':
+        break;
+    case 'activity':
+        $url = $base_url_dashboard.'plugin/activity/configuration';
+        $params['activity_id'] = $_GET['instance_id'];
+        $params['course_id'] = $_GET['course_id'];
+        break;
+    case 'course':
+        $url = $base_url_dashboard.'plugin/course/report';
+        $params['course_id'] = $_GET['course_id'];
+        break;
+    case 'test_page':
+        $url = $base_url_dashboard.'plugin/test-page';
+        break;
+}
+
+$url = $url.'?'.http_build_query($params,'', '&');
+
+header("Location: {$url}");
+exit();
+
+

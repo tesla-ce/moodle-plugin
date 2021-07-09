@@ -124,11 +124,11 @@ class Common {
             return substr($COURSE->lang, 0, 2);
         }
 
-        if ($SESSION->lang != '') {
+        if (property_exists($SESSION, 'lang') && $SESSION->lang != '') {
             return substr($SESSION->lang, 0, 2);
         }
 
-        if ($USER->lang != '') {
+        if (property_exists($USER, 'lang') && $USER->lang != '') {
             return substr($USER->lang, 0, 2);
         }
 

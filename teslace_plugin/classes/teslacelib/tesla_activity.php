@@ -38,7 +38,7 @@ class TeslaActivity
         $vle_course_id = $activity->course;
         $course = $this->client->getCourse()->getByVleCourseId($vle_id, $vle_course_id);
 
-        if ($course['headers']['http_code'] == 200) {
+        if ($course['headers']['http_code'] == 200 && count($course['content']['results']) > 0) {
             $course_id = $course['content']['results'][0]['id'];
         } else {
             // course not exist, create it.

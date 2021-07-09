@@ -77,4 +77,17 @@ if ($hassiteconfig) {
         new admin_setting_configcheckbox('local_teslace/auto_enrol_instructor',
             get_string('auto_enrol_instructor', 'local_teslace'),
             get_string('auto_enrol_instructor_help', 'local_teslace'), '1'));
+
+    $settings->add(
+        new admin_setting_configselect('local_teslace/floating_menu_initial_pos',
+            get_string('floating_menu_initial_pos', 'local_teslace'),
+            get_string('floating_menu_initial_pos_help', 'local_teslace'),
+            'top-right',
+        array(
+            'top-right'=>'Top Right',
+            'top-left'=>'Top Left',
+            'bottom-right'=>'Bottom Right',
+            'bottom-left'=>'Bottom Left',
+        ))
+    );
 }
