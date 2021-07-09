@@ -221,7 +221,6 @@ class TeSLACELib{
                     }
 
                     $session_id = $this->common->getAssessmentId($activity);
-                    $session_id = null;
                     $reject_message = null;
                     $max_ttl = intval(get_config('local_teslace', 'max_ttl'));
 
