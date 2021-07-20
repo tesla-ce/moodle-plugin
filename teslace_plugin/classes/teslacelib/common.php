@@ -115,6 +115,11 @@ class Common {
         return null;
     }
 
+    public function clearAssessmentId($activity) {
+        global $SESSION;
+        $this->setAssessmentId($activity, null);
+    }
+
     public function get_current_language() {
         global $SESSION;
         global $COURSE;

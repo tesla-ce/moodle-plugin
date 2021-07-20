@@ -230,6 +230,15 @@ class TeSLACELib{
                         $activity['type'], $learner['email'], $max_ttl, $redirect_reject_url, $reject_message, $locale,
                         $session_id, $floating_menu_initial_pos);
 
+                    // check if session is not closed
+                    if ($response['headers']['http_code'] == 400)  {
+                        // assume that session_id is closed, we need another session_id to send data.
+                        // Create new assessment without session_id
+                        $response = $this->client->getAssessment()->create($vle_id, $course['id'], $activity['id'],
+                            $activity['type'], $learner['email'], $max_ttl, $redirect_reject_url, $reject_message,
+                            $locale, null, $floating_menu_initial_pos);
+                    }
+
                     // check enrolment status
                     if (isset($response['content']['status']) && $response['content']['status'] == 4) {
                         // missing enrolment

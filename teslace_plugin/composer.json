@@ -9,6 +9,6 @@
         }
     ],
     "require": {
-      "tesla-ce/client": "0.0.4"
+      "tesla-ce/client": "0.0.5"
     }
 }
