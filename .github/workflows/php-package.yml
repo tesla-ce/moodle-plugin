@@ -266,3 +266,11 @@ jobs:
           file: docker/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  deploy_demo:
+    needs: docker_edge
+    runs-on: [self-hosted, tesla-ce-demo]
+    steps:
+      - name: Update core images
+        run: |
+          sudo /opt/tesla-ce/upgrade_moodle_images.sh
