@@ -64,6 +64,9 @@ switch($_GET['context']) {
     case 'test_page':
         $url = $base_url_dashboard.'plugin/test-page';
         break;
+    case 'enrolment':
+        $url = $base_url_dashboard.'plugin/enrolment';
+        break;
 }
 
 $url = $url.'?'.http_build_query($params,'', '&');

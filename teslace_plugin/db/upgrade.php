@@ -26,7 +26,7 @@ function xmldb_local_teslace_upgrade($oldversion) {
     $result = TRUE;
 
     // Insert PHP code from XMLDB Editor here
-    if ($oldversion < 202103180930000) {
+    if ($oldversion < 202108311210000) {
 
         // Define table local_teslace_pend_requests to be created.
         $table = new xmldb_table('local_teslace_pend_requests');
@@ -43,7 +43,7 @@ function xmldb_local_teslace_upgrade($oldversion) {
         $table->add_field('observations', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('created', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('modified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-
+        $table->add_field('session_id', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
         // Adding keys to table local_teslace_pend_requests.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -54,7 +54,7 @@ function xmldb_local_teslace_upgrade($oldversion) {
         }
 
         // Teslace savepoint reached.
-        upgrade_plugin_savepoint(true, 202103180930000, 'local', 'teslace');
+        upgrade_plugin_savepoint(true, 202108311210000, 'local', 'teslace');
     }
 
     return $result;

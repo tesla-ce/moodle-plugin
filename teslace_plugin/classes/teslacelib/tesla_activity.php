@@ -59,9 +59,12 @@ class TeslaActivity
                 // no date in survey
                 break;
             case 'quiz':
-            case 'assign':
                 $startField = 'timeopen';
                 $endField = 'timeclose';
+                break;
+            case 'assign':
+                $startField = 'allowsubmissionsfromdate';
+                $endField = 'duedate';
                 break;
             case 'forum':
                 // $startField = 'timeopen';
@@ -116,13 +119,13 @@ class TeslaActivity
             'type'=>$activityType
         );
         $assessment_id = $this->common->getAssessmentId($activity);
-
+        /*
         if ($assessment_id != null) {
             $vle_id = $this->client->getVleId();
             $this->client->getAssessment()->close($vle_id, $assessment_id);
             $this->common->clearAssessmentId($activity);
         }
-
+        */
         // check if $user is student
         if ($this->common->is_user_with_role($courseId, Common::ROLE_STUDENT, $USER->id) === true) {
             // check if this submission is in queue
@@ -132,7 +135,8 @@ class TeslaActivity
                 'vle_learner_id'=>$DB->sql_compare_text($USER->email),
                 'vle_activity_id'=>$DB->sql_compare_text($activityId),
                 'vle_activity_type'=>$DB->sql_compare_text($activityType),
-                'status'=>$DB->sql_compare_text('PENDING')
+                'status'=>$DB->sql_compare_text('PENDING'),
+                'session_id'=>$assessment_id
             );
 
             $select = 'info = :info AND vle_course_id = :vle_course_id AND vle_learner_id = :vle_learner_id AND 
@@ -158,6 +162,7 @@ class TeslaActivity
             $dataobject->counter = 0;
             $dataobject->created = time();
             $dataobject->modified = time();
+            $dataobject->session_id = $assessment_id;
             return $DB->insert_record('local_teslace_pend_requests', $dataobject, $returnid = true, $bulk = false);
         }
 
@@ -167,7 +172,7 @@ class TeslaActivity
     public function send_submission($request)
     {
         $result = array(
-            'result'=>true,
+            'result'=>false,
             'message'=>null
         );
 
@@ -254,20 +259,23 @@ class TeslaActivity
             $result['message'] = 'DATA_METADATA_NOT_VALID';
             return $result;
         }
+        $session_id = $request->session_id;
 
-        $response = $this->client->getVerification()->send(
-            $institution_id,
+        $response = $this->client->getVerification()->sendActivityDocument(
+            $vle_id,
             $learner_id,
             $data['data'],
             $instrument_ids,
             $course_id,
             $activity_id,
-            null,
+            $session_id,
             $data['metadata']
         );
-
-        if (isset($response['result'])) {
-            $result['result'] = $response['result'];
+        var_dump($response);
+        if (isset($response['content']['status'])) {
+            if ($response['content']['status'] === 'OK') {
+                $result['result'] = true;
+            }
         }
 
         return $result;
@@ -347,7 +355,6 @@ class TeslaActivity
                 'vle_id'=>$this->client->getVleId(),
             )
         );
-        print_r($metadata);
 
         return array(
             'data'=>$this->generate_zip(json_encode($quiz_content), $attachments),

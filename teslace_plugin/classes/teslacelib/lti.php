@@ -92,13 +92,13 @@ class LTI {
                 $endpoint = $base_endpoint.'/informed_consent';
                 $learner = $this->common->get_learner_info();
                 $custom_params['tesla_learner_id'] = $learner['email'];
-                $custom_params['tesla_url_callback'] = new moodle_url($CFG->wwwroot.'/course/view.php', array('id' => $instance_id));
+                $custom_params['tesla_url_callback'] = new moodle_url($CFG->wwwroot.'/course/view.php', array('id' => $course_id));
                 break;
             case 'enrolment':
                 $endpoint = $base_endpoint.'/enrolment/';
                 $learner = $this->common->get_learner_info();
                 $custom_params['tesla_learner_id'] = $learner['email'];
-                $custom_params['tesla_url_callback'] = new moodle_url($CFG->wwwroot.'/course/view.php', array('id' => $instance_id));
+                $custom_params['tesla_url_callback'] = new moodle_url($CFG->wwwroot.'/course/view.php', array('id' => $course_id));
                 break;
             case 'activity':
                 $endpoint = $base_endpoint.'/instructor/';

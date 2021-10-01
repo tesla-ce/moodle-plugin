@@ -250,8 +250,9 @@ class TeSLACELib{
                                 $instruments[] = $instrument['instrument_id'];
                             }
                         }
+                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'enrolment', $course['id']);
 
-                        return $this->lti->lti_go_to('enrolment', $PAGE->context->instanceid, $course['id'], $instruments);
+                        // return $this->lti->lti_go_to('enrolment', $PAGE->context->instanceid, $course['id'], $instruments);
                     }
 
                     $assessment_id = $response['content']['id'];
@@ -306,6 +307,12 @@ class TeSLACELib{
         // Add My TeSLA link in the settings menu
         return new moodle_url('/local/teslace/views/my_tesla.php', $data_url);
     }
+
+    private function go_to_url_dashboard($instance_id, $context, $course_id) {
+        header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id)->out()));
+        die();
+    }
+    
 
     public function report_exception() {
         // Sentry\init(['dsn' => 'https://a4de765bb10b4972986beb6e17dfd4ab@sentry.sunai.uoc.edu/6' ]);

@@ -18,12 +18,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 202107091616000;
+$plugin->version = 20211001163400;
 $plugin->requires = 2019111800;
 $plugin->cron = 0;
 $plugin->component = 'local_teslace';
 # todo: change value to: MATURITY_STABLE
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->maturity = MATURITY_BETA;
 $plugin->release = 'v0.0.1';
 
 $plugin->dependencies = [];
