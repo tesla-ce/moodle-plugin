@@ -20,14 +20,12 @@ namespace tesla_ce_lib;
 
 require_once(dirname(__FILE__).'/../../vendor/autoload.php');
 
-require_once(dirname(__FILE__).'/lti.php');
 require_once(dirname(__FILE__).'/common.php');
 require_once(dirname(__FILE__).'/tesla_course.php');
 require_once(dirname(__FILE__).'/tesla_activity.php');
 
 use tesla_ce\client\Client;
 use tesla_ce\client\exceptions\ResponseError;
-use tesla_ce_lib\LTI as TeSLACELibLTI;
 use tesla_ce_lib\Common as TeSLACELibCommon;
 
 use settings_navigation;
@@ -39,7 +37,6 @@ use cache;
 class TeSLACELib{
     public $client = null;
     public $common = null;
-    public $lti = null;
     private static $instance = null;
     private $initialized = false;
     private $teslaCourse = null;
@@ -76,7 +73,6 @@ class TeSLACELib{
 
             $this->client = new Client($role, $secret, $base_url, !$debug, $tesla_cache);
 
-            $this->lti = new TeSLACELibLTI($this->client, $this->common);
             $this->teslaCourse = new TeslaCourse($this->client);
             $this->teslaActivity = new TeslaActivity($this->client, $this->common);
 
@@ -217,7 +213,7 @@ class TeSLACELib{
                     // check informed consent
                     $ic_status = $response['content']['results'][0]['ic_status'];
                     if (substr($ic_status, 0, 6) != 'VALID_') {
-                        return $this->lti->lti_go_to('informed_consent', $PAGE->context->instanceid, $course['id'], array());
+                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'informed_consent', $course['id']);
                     }
 
                     $session_id = $this->common->getAssessmentId($activity);
