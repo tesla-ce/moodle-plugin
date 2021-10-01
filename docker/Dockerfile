@@ -2,7 +2,7 @@ FROM nginx:1.17.10
 ENV MOODLE_RELEASE MOODLE_39_STABLE
 ENV MOODLE_TAG 'v3.9.4'
 
-RUN apt-get update && apt-get install -y curl zlib1g-dev zip libpng-dev libzip-dev libpq-dev libcurl4-gnutls-dev libxml2-dev libonig-dev git php-fpm php-zip php-pdo php-pdo-mysql php-gd php-json php-curl php-zip php-mbstring php-xml php-xmlrpc php-soap php-intl ssh-client
+RUN apt-get update && apt-get install -y curl zlib1g-dev zip libpng-dev libzip-dev libpq-dev libcurl4-gnutls-dev libxml2-dev libonig-dev git php-fpm php-zip php-pdo php-pdo-mysql php-gd php-json php-curl php-zip php-mbstring php-xml php-xmlrpc php-soap php-intl ssh-client cron
 RUN mkdir -p /var/www/html
 RUN mkdir -p /var/moodledata
 
@@ -35,5 +35,10 @@ RUN chown -R www-data:www-data /var/moodledata
 COPY docker/install_moodle.sh /entrypoint.sh
 COPY docker/wait_for_it.sh /wait_for_it.sh
 RUN chmod a+x /wait_for_it.sh
+
+# configure cron
+COPY docker/moodle-cron /etc/cron.d/moodle-cron
+RUN chmod 0644 /etc/cron.d/moodle-cron
+RUN crontab /etc/cron.d/moodle-cron
 
 ENTRYPOINT /bin/bash /entrypoint.sh
