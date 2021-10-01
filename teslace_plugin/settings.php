@@ -53,11 +53,6 @@ if ($hassiteconfig) {
         new admin_setting_configtext('local_teslace/base_url', get_string('base_url', 'local_teslace'),
             get_string('base_url_help', 'local_teslace'), getenv('API_URL'), PARAM_URL));
 
-    // Adding the standard "lti_url" field.
-    $settings->add(
-        new admin_setting_configtext('local_teslace/lti_url', get_string('lti_url', 'local_teslace'),
-            get_string('lti_url_help', 'local_teslace'), getenv('LTI_URL'), PARAM_URL));
-
     // Adding the standard "max_ttl" field.
     $settings->add(
         new admin_setting_configtext('local_teslace/max_ttl', get_string('max_ttl', 'local_teslace'),

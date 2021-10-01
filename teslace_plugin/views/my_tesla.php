@@ -21,6 +21,7 @@ require_login();
 
 require_once(dirname(__FILE__).'/../classes/teslacelib/tesla_ce_lib.php');
 use tesla_ce_lib\TeSLACELib;
+global $CFG;
 
 $t_lib = TeSLACELib::getInstance();
 
@@ -41,7 +42,7 @@ $url = $response['content']['url'];
 $params = array(
     'id'=>$response['content']['id'],
     'token'=>$response['content']['token'],
-    'redirect_uri'=>null,
+    'redirect_uri'=>$CFG->wwwroot.'course/view.php?id='.$_GET['course_id'],
     'institution_id'=>$t_lib->client->getModule()['vle']['institution']
 );
 
@@ -58,7 +59,7 @@ switch($_GET['context']) {
         $params['course_id'] = $_GET['course_id'];
         break;
     case 'course':
-        $url = $base_url_dashboard.'plugin/course/report';
+        $url = $base_url_dashboard."plugin/course/report";
         $params['course_id'] = $_GET['course_id'];
         break;
     case 'test_page':
@@ -67,7 +68,11 @@ switch($_GET['context']) {
     case 'enrolment':
         $url = $base_url_dashboard.'plugin/enrolment';
         break;
+    case 'informed-consent':
+        $url = $base_url_dashboard.'plugin/ic';
+        break;
 }
+
 
 $url = $url.'?'.http_build_query($params,'', '&');
 
