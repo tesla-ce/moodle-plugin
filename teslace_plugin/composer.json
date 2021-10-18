@@ -9,6 +9,7 @@
         }
     ],
     "require": {
-      "tesla-ce/client": "0.0.8"
+        "tesla-ce/client": "0.0.8",
+        "sentry/sdk": "^3.1"
     }
 }

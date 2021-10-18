@@ -8,7 +8,7 @@ RUN mkdir -p /var/moodledata
 
 # configure nginx & php
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/default.conf.template /etc/nginx/conf.d/default.conf.template
 COPY docker/extra_config_php.ini /usr/local/etc/php/conf.d/extra_config_php.ini
 #Clone Moodle
 RUN rm -rf /var/www/html

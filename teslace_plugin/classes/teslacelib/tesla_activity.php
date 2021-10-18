@@ -234,7 +234,7 @@ class TeslaActivity
         // check if consent is VALID_
         $ic_status = $learner['content']['results'][0]['ic_status'];
 
-        if (substr($ic_status, 0, 6) != 'VALID_') {
+        if (substr($ic_status, 0, 5) != 'VALID') {
             $result['result'] = false;
             $result['message'] = 'LEARNER_ERROR_VALID_CONSENT';
             return $result;
