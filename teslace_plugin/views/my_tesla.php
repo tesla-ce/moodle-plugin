@@ -53,6 +53,17 @@ $base_url_dashboard = $url_explode[0];
 switch($_GET['context']) {
     case 'my_tesla':
         break;
+    case 'activity_learner_report':
+        $url = $base_url_dashboard.'plugin/activity/report';
+        $params['activity_id'] = $_GET['instance_id'];
+        $params['course_id'] = $_GET['course_id'];
+        $params['report_id'] = $_GET['report_id'];
+        break;
+    case 'activity_reports':
+        $url = $base_url_dashboard.'plugin/activity/reports';
+        $params['activity_id'] = $_GET['instance_id'];
+        $params['course_id'] = $_GET['course_id'];
+        break;
     case 'activity':
         $url = $base_url_dashboard.'plugin/activity/configuration';
         $params['activity_id'] = $_GET['instance_id'];
@@ -61,6 +72,7 @@ switch($_GET['context']) {
     case 'course':
         $url = $base_url_dashboard."plugin/course/report";
         $params['course_id'] = $_GET['course_id'];
+        $params['activity_id'] = $_GET['instance_id'];
         break;
     case 'test_page':
         $url = $base_url_dashboard.'plugin/test-page';

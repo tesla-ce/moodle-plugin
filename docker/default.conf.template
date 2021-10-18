@@ -26,5 +26,8 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
         fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param SENTRY_DSN ${SENTRY_DSN};
+        fastcgi_param SENTRY_SERVER_NAME ${SENTRY_SERVER_NAME};
+        fastcgi_param SENTRY_ENABLED ${SENTRY_ENABLED};
     }
 }

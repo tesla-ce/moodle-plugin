@@ -34,6 +34,7 @@ $string['vlecode'] = 'VLE code';
 $string['vle_code_help'] = 'VLE code help';
 $string['my_tesla_title'] = 'My TeSLA';
 $string['tesla_activity'] = 'TeSLA activity';
+$string['tesla_activity_report'] = 'TeSLA reports';
 $string['tesla_course'] = 'TeSLA course';
 
 $string['debug'] = 'Debug mode';

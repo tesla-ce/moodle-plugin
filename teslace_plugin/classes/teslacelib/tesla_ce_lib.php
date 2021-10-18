@@ -27,6 +27,7 @@ require_once(dirname(__FILE__).'/tesla_activity.php');
 use tesla_ce\client\Client;
 use tesla_ce\client\exceptions\ResponseError;
 use tesla_ce_lib\Common as TeSLACELibCommon;
+use Sentry;
 
 use settings_navigation;
 use moodle_url;
@@ -63,6 +64,7 @@ class TeSLACELib{
         $base_url = get_config('local_teslace', 'base_url');
         $debug = boolval(get_config('local_teslace', 'debug'));
         $this->common = new TeSLACELibCommon();
+        $this->report_exception();
 
         if ($this->common->is_enable() === false) {
             return $this->initialized;
@@ -122,6 +124,8 @@ class TeSLACELib{
             $course_id = $context->instanceid;
             $branch = $nav->get('courseadmin');
 
+            // todo: $this->teslaCourse->getCourse($course_id);
+
         } else if ($context->contextlevel == CONTEXT_MODULE) {
             $course_id = $PAGE->__get('course')->id;
             $branch = $nav->get('modulesettings');
@@ -170,6 +174,10 @@ class TeSLACELib{
                         $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity', $tesla_course_id);
                         $branch->add($this->common->get_string('tesla_activity'), $my_tesla_url, $nav::TYPE_CONTAINER,
                             null, 'tesla_ce_my_tesla_activity_' . $course_id);
+
+                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity_report', $tesla_course_id);
+                        $branch->add($this->common->get_string('tesla_activity_report'), $my_tesla_url, $nav::TYPE_CONTAINER,
+                            null, 'tesla_ce_my_tesla_activity_report_' . $course_id);
                     }
                 }
             }
@@ -212,7 +220,7 @@ class TeSLACELib{
 
                     // check informed consent
                     $ic_status = $response['content']['results'][0]['ic_status'];
-                    if (substr($ic_status, 0, 6) != 'VALID_') {
+                    if (substr($ic_status, 0, 5) != 'VALID') {
                         return $this->go_to_url_dashboard($PAGE->context->instanceid, 'informed_consent', $course['id']);
                     }
 
@@ -308,23 +316,27 @@ class TeSLACELib{
         header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id)->out()));
         die();
     }
-    
+
+
 
     public function report_exception() {
         // Sentry\init(['dsn' => 'https://a4de765bb10b4972986beb6e17dfd4ab@sentry.sunai.uoc.edu/6' ]);
-        /*
         $dsn = getenv('SENTRY_DSN');
 
         $true_values = array(true, '1', 1, 'true');
         $sentry_enabled = in_array(getenv('SENTRY_ENABLED'), $true_values);
 
+        $release = get_config('local_teslace')->version;
+
         if ($sentry_enabled === true) {
             Sentry\init([
                 'dsn'=>$dsn,
-                'max_breadcrumbs' => 50
+                'max_breadcrumbs' => 100,
+                'server_name'=>getenv('SENTRY_SERVER_NAME'),
+                'release'=>$release,
+                'traces_sample_rate' => 1.0
             ]);
+            Sentry\captureLastError();
         }
-        */
     }
-
 }
