@@ -42,7 +42,7 @@ $url = $response['content']['url'];
 $params = array(
     'id'=>$response['content']['id'],
     'token'=>$response['content']['token'],
-    'redirect_uri'=>$CFG->wwwroot.'course/view.php?id='.$_GET['course_id'],
+    'redirect_uri'=>$CFG->wwwroot.'/course/view.php?id='.$_GET['vle_course_id'],
     'institution_id'=>$t_lib->client->getModule()['vle']['institution']
 );
 
@@ -50,27 +50,33 @@ $params = array(
 $url_explode = explode('auth', $url);
 $base_url_dashboard = $url_explode[0];
 
+$new_window = false;
+
 switch($_GET['context']) {
     case 'my_tesla':
+        $url = $base_url_dashboard.'plugin/dashboard';
+        $new_window = true;
         break;
     case 'activity_learner_report':
         $url = $base_url_dashboard.'plugin/activity/report';
         $params['activity_id'] = $_GET['instance_id'];
         $params['course_id'] = $_GET['course_id'];
         $params['report_id'] = $_GET['report_id'];
+        $new_window = true;
         break;
-    case 'activity_reports':
+    case 'activity_report':
         $url = $base_url_dashboard.'plugin/activity/reports';
         $params['activity_id'] = $_GET['instance_id'];
         $params['course_id'] = $_GET['course_id'];
+        $new_window = true;
         break;
-    case 'activity':
+    case 'activity_configuration':
         $url = $base_url_dashboard.'plugin/activity/configuration';
         $params['activity_id'] = $_GET['instance_id'];
         $params['course_id'] = $_GET['course_id'];
         break;
     case 'course':
-        $url = $base_url_dashboard."plugin/course/report";
+        $url = $base_url_dashboard."plugin/course";
         $params['course_id'] = $_GET['course_id'];
         $params['activity_id'] = $_GET['instance_id'];
         break;
@@ -80,15 +86,25 @@ switch($_GET['context']) {
     case 'enrolment':
         $url = $base_url_dashboard.'plugin/enrolment';
         break;
-    case 'informed-consent':
+    case 'informed_consent':
         $url = $base_url_dashboard.'plugin/ic';
         break;
 }
 
 
+if ($new_window === true) {
+    unset($params['redirect_uri']);
+}
+
 $url = $url.'?'.http_build_query($params,'', '&');
 
-header("Location: {$url}");
+//var_dump($url); die();
+
+if ($new_window === true) {
+    echo '<script>window.open("'.$url.'"); window.history.go(-1);</script>';
+} else {
+    header("Location: {$url}");
+}
 exit();
 
 
