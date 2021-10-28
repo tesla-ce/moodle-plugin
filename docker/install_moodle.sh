@@ -56,4 +56,5 @@ if [ ${MOODLE_DEBUG:-0} == 0 ]; then
   sed -i "/\\\*wwwroot\\\*/i \$CFG->disableupdateautodeploy = true;\n" /var/www/html/config.php
 fi
 
+cron
 nginx -g "daemon off;"
