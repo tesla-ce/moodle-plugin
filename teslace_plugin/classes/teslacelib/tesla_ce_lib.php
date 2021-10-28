@@ -140,27 +140,31 @@ class TeSLACELib{
         }
 
         if ($branch) {
-            $my_tesla_url = $this->generate_url_dashboard(null, 'my_tesla', null);
-            $branch->add($this->common->get_string('my_tesla_title'), $my_tesla_url, $nav::TYPE_CONTAINER,
-                null, 'tesla_ce_my_tesla_' . $course_id);
-
             $vle_id = $this->client->getVleId();
             $course = $this->common->get_course_info();
 
             $tesla_course_id = $this->get_or_create_course($vle_id, $course);
             $this->add_user_to_course($course_id, $vle_id, $tesla_course_id);
 
+            $my_tesla_url = $this->generate_url_dashboard(null, 'my_tesla', $tesla_course_id, $course_id);
+            $branch->add($this->common->get_string('my_tesla_title'), $my_tesla_url, $nav::TYPE_CONTAINER,
+                null, 'tesla_ce_my_tesla_' . $course_id);
+
+
+
             $is_student = $this->common->is_user_with_role($course_id, TeSLACELibCommon::ROLE_STUDENT, $USER->id);
 
             if (!$is_student) {
                 // Add TeSLA course link inside context course
+                /*
                 if ($context->contextlevel == CONTEXT_COURSE) {
                     // $data_url['context'] = 'course';
                     // $my_tesla_url = new moodle_url('/local/teslace/views/lti_tesla.php', $data_url);
-                    $my_tesla_url = $this->generate_url_dashboard(null, 'course', $tesla_course_id);
+                    $my_tesla_url = $this->generate_url_dashboard(null, 'course', $course_id, $tesla_course_id);
                     $branch->add($this->common->get_string('tesla_course'), $my_tesla_url, $nav::TYPE_CONTAINER,
                         null, 'tesla_ce_my_tesla_course_' . $course_id);
                 }
+                */
 
                 // Add TeSLA activity link inside context activity
                 if ($context->contextlevel == CONTEXT_MODULE) {
@@ -171,13 +175,13 @@ class TeSLACELib{
 
                     if ($response['headers']['http_code'] == 200 && count($response['content']['results']) > 0) {
                         $tesla_activity_id = $response['content']['results'][0]['id'];
-                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity', $tesla_course_id);
+                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity_configuration', $tesla_course_id, $course_id);
                         $branch->add($this->common->get_string('tesla_activity'), $my_tesla_url, $nav::TYPE_CONTAINER,
                             null, 'tesla_ce_my_tesla_activity_' . $course_id);
 
-                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity_report', $tesla_course_id);
+                        $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity_report', $tesla_course_id, $course_id);
                         $branch->add($this->common->get_string('tesla_activity_report'), $my_tesla_url, $nav::TYPE_CONTAINER,
-                            null, 'tesla_ce_my_tesla_activity_report_' . $course_id);
+                            array('target'=>'_blank'), 'tesla_ce_my_tesla_activity_report_' . $course_id);
                     }
                 }
             }
@@ -221,7 +225,7 @@ class TeSLACELib{
                     // check informed consent
                     $ic_status = $response['content']['results'][0]['ic_status'];
                     if (substr($ic_status, 0, 5) != 'VALID') {
-                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'informed_consent', $course['id']);
+                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'informed_consent', $course['id'], $course_id);
                     }
 
                     $session_id = $this->common->getAssessmentId($activity);
@@ -254,7 +258,7 @@ class TeSLACELib{
                                 $instruments[] = $instrument['instrument_id'];
                             }
                         }
-                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'enrolment', $course['id']);
+                        return $this->go_to_url_dashboard($PAGE->context->instanceid, 'enrolment', $course['id'], $course_id);
 
                         // return $this->lti->lti_go_to('enrolment', $PAGE->context->instanceid, $course['id'], $instruments);
                     }
@@ -306,14 +310,15 @@ class TeSLACELib{
         }
     }
 
-    private function generate_url_dashboard($instance_id, $context, $course_id) {
-        $data_url = array('instance_id' => $instance_id, 'context' => $context, 'course_id'=>$course_id);
+    private function generate_url_dashboard($instance_id, $context, $course_id, $vle_course_id) {
+        $data_url = array('instance_id' => $instance_id, 'context' => $context, 'course_id'=>$course_id, 'vle_course_id'=>$vle_course_id);
+
         // Add My TeSLA link in the settings menu
         return new moodle_url('/local/teslace/views/my_tesla.php', $data_url);
     }
 
-    private function go_to_url_dashboard($instance_id, $context, $course_id) {
-        header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id)->out()));
+    private function go_to_url_dashboard($instance_id, $context, $course_id, $vle_course_id) {
+        header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id, $vle_course_id)->out()));
         die();
     }
 
