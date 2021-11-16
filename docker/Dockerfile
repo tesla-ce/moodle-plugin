@@ -2,6 +2,10 @@ FROM nginx:1.17.10
 ENV MOODLE_RELEASE MOODLE_39_STABLE
 ENV MOODLE_TAG 'v3.9.4'
 
+ENV SENTRY_DSN ''
+ENV SENTRY_SERVER_NAME 'http://moodle.tesla-ce'
+ENV SENTRY_ENABLED 0
+
 RUN apt-get update && apt-get install -y curl zlib1g-dev zip libpng-dev libzip-dev libpq-dev libcurl4-gnutls-dev libxml2-dev libonig-dev git php-fpm php-zip php-pdo php-pdo-mysql php-gd php-json php-curl php-zip php-mbstring php-xml php-xmlrpc php-soap php-intl ssh-client cron
 RUN mkdir -p /var/www/html
 RUN mkdir -p /var/moodledata

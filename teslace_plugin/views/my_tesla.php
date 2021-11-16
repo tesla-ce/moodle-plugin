@@ -50,25 +50,20 @@ $params = array(
 $url_explode = explode('auth', $url);
 $base_url_dashboard = $url_explode[0];
 
-$new_window = false;
-
 switch($_GET['context']) {
     case 'my_tesla':
         $url = $base_url_dashboard.'plugin/dashboard';
-        $new_window = true;
         break;
     case 'activity_learner_report':
         $url = $base_url_dashboard.'plugin/activity/report';
         $params['activity_id'] = $_GET['instance_id'];
         $params['course_id'] = $_GET['course_id'];
         $params['report_id'] = $_GET['report_id'];
-        $new_window = true;
         break;
     case 'activity_report':
         $url = $base_url_dashboard.'plugin/activity/reports';
         $params['activity_id'] = $_GET['instance_id'];
         $params['course_id'] = $_GET['course_id'];
-        $new_window = true;
         break;
     case 'activity_configuration':
         $url = $base_url_dashboard.'plugin/activity/configuration';
@@ -89,11 +84,6 @@ switch($_GET['context']) {
     case 'informed_consent':
         $url = $base_url_dashboard.'plugin/ic';
         break;
-}
-
-
-if ($new_window === true) {
-    unset($params['redirect_uri']);
 }
 
 $url = $url.'?'.http_build_query($params,'', '&');
