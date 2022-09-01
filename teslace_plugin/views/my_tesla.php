@@ -88,13 +88,11 @@ switch($_GET['context']) {
 
 $url = $url.'?'.http_build_query($params,'', '&');
 
-//var_dump($url); die();
+$url = str_replace('https://dev.tesla-ce.eu', 'http://localhost:4200', $url);
+// var_dump($url); die();
 
-if ($new_window === true) {
-    echo '<script>window.open("'.$url.'"); window.history.go(-1);</script>';
-} else {
-    header("Location: {$url}");
-}
+header("Location: {$url}");
+
 exit();
 
 

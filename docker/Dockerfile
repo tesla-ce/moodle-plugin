@@ -1,6 +1,6 @@
 FROM nginx:1.17.10
 ENV MOODLE_RELEASE MOODLE_39_STABLE
-ENV MOODLE_TAG 'v3.9.14'
+ENV MOODLE_TAG 'v4.0.1'
 
 ENV SENTRY_DSN 'http://moodle.tesla-ce'
 ENV SENTRY_SERVER_NAME 'http://moodle.tesla-ce'
