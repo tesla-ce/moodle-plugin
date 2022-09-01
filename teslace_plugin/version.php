@@ -18,7 +18,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021111616470000;
+$plugin->version = 2022090111170000;
 $plugin->requires = 2019111800;
 $plugin->cron = 0;
 $plugin->component = 'local_teslace';

@@ -55,9 +55,10 @@ services:
       MOODLE_ADMINEMAIL: test@tesla-ce.org
       #API_URL: "https://localhost"
       MOODLE_DEBUG: 1
-      SENTRY_DSN: https://51a4e5fc34ac4104a54fe6966451e03d@sentry.sunai.uoc.edu/4
-      SENTRY_SERVER_NAME: http://moodle.tesla-ce
-      SENTRY_ENABLED: 1
+#      SENTRY_DSN: https://51a4e5fc34ac4104a54fe6966451e03d@sentry.sunai.uoc.edu/4
+#      SENTRY_SERVER_NAME: http://moodle.tesla-ce
+#
+      SENTRY_ENABLED: 0
     depends_on:
       - database
     networks:
