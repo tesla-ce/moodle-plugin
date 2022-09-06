@@ -273,5 +273,6 @@ jobs:
     runs-on: [self-hosted, tesla-ce-demo]
     steps:
       - name: Update core images
+        continue-on-error: true
         run: |
           sudo /opt/tesla-ce/upgrade_moodle_images.sh
