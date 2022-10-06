@@ -27,8 +27,13 @@ class TeslaActivity
         $this->common = $common;
     }
 
-    public function create_or_update($event)
+    public function create_or_update($event, $force_create=false)
     {
+        $allow_course_autocreation = boolval(get_config('local_teslace', 'enabletesladefault'));
+        if (!$allow_course_autocreation && $force_create === false) {
+            return;
+        }
+
         global $DB;
         $course_module = $DB->get_record('course_modules', array('id'=>$event->objectid), '*', MUST_EXIST);
         $mod_name = $DB->get_field('modules', 'name', array('id' =>$course_module->module));

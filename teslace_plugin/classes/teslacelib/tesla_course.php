@@ -26,6 +26,11 @@ class TeslaCourse {
     }
 
     public function create_or_update($eventdata) {//$shortname, $id, $fullname, $start, $end) {
+        $allow_course_autocreation = boolval(get_config('local_teslace', 'enabletesladefault'));
+        if (!$allow_course_autocreation) {
+            return;
+        }
+
         $vle_id = $this->client->getVleId();
 
         $start = null;
@@ -39,6 +44,7 @@ class TeslaCourse {
             $end = new \Datetime('@'.$eventdata->enddate);
         }
 
+        $course = $this->client->getCourse()->getByVleCourseId($vle_id, $eventdata->id);
 
         if ($course['headers']['http_code'] == 200 && count($course['content']['results']) > 0) {
             $course_id = $course['content']['results'][0]['id'];
@@ -55,8 +61,6 @@ class TeslaCourse {
     public function getCourse($course_id) {
         $vle_id = $this->client->getVleId();
         $course = $this->client->getCourse()->getByVleCourseId($vle_id, $course_id);
-        print_r($course['content']);
-        die();
-
+        return $course;
     }
 }

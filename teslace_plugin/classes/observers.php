@@ -29,7 +29,10 @@ class observers
         $eventdata = $event->get_record_snapshot('course',$event->objectid);
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $t_lib->getTeSLACourse()->create_or_update($eventdata);
@@ -40,7 +43,10 @@ class observers
         $eventdata = $event->get_record_snapshot('course',$event->objectid);
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $t_lib->getTeSLACourse()->create_or_update($eventdata);
@@ -65,9 +71,13 @@ class observers
     {
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
+
         $t_lib->getTeSLAActivity()->create_or_update($event);
     }
 
@@ -75,7 +85,10 @@ class observers
     {
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $t_lib->getTeSLAActivity()->create_or_update($event);
@@ -135,7 +148,10 @@ class observers
         $t_lib = TeSLACELib::getInstance();
 
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->submission, 'assign', $assign_id,
@@ -149,7 +165,10 @@ class observers
 
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->submission, 'assign', $assign_id,
@@ -164,7 +183,10 @@ class observers
         $t_lib = TeSLACELib::getInstance();
 
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->submission, 'assign', $assign_id,
@@ -178,7 +200,10 @@ class observers
 
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->submission, 'assign', $assign_id,
@@ -191,7 +216,10 @@ class observers
         $eventdata = $event->get_record_snapshot('forum_discussions',$event->objectid);
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->firstpost, 'forum', $event->other['forumid'], $event->courseid);
@@ -200,7 +228,10 @@ class observers
     {
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($event->objectid, 'forum', $event->other['forumid'], $event->courseid);
@@ -210,7 +241,10 @@ class observers
     {
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($event->objectid, 'forum', $event->other['forumid'], $event->courseid);
@@ -228,7 +262,10 @@ class observers
         $eventdata = $event->get_record_snapshot('quiz_attempts',$event->objectid);
         $t_lib = TeSLACELib::getInstance();
         if ($t_lib === null) {
-            mtrace("Moodle can not connect to TeSLA infrastructure");
+            $debug = boolval(get_config('local_teslace', 'debug'));
+            if ($debug == true) {
+                mtrace("Moodle can not connect to TeSLA infrastructure");
+            }
             return;
         }
         $insertId = $t_lib->getTeSLAActivity()->queue_submission($eventdata->id, 'quiz', $eventdata->quiz, $event->courseid);

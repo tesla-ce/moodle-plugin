@@ -51,3 +51,9 @@ $string['auto_enrol_instructor_help'] = 'Auto enrol instructor when he/she enter
 $string['cachedef_tesla_ce_sdk'] = 'This cache is used to cache the configuration of TeSLA CE local plugin';
 $string['floating_menu_initial_pos'] = 'Floating menu initial position';
 $string['floating_menu_initial_pos_help'] = 'Where will floating menu be placed initially?';
+
+$string['tesla_status'] = 'TeSLA status';
+$string['verifyssl'] = 'Verify SSL certificates';
+$string['verifyssl_help'] = 'If you do not verify certificates, disable this setting';
+$string['create_course_tesla'] = 'Create course in TeSLA';
+$string['create_activity_tesla'] = 'Create activity in TeSLA';

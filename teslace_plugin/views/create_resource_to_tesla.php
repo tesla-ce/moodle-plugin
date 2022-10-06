@@ -16,17 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_login();
 
-$plugin->version = 2022100618190000;
-$plugin->supported = [39,40];
-$plugin->requires = 2019111800;
-$plugin->cron = 0;
-$plugin->component = 'local_teslace';
-# todo: change value to: MATURITY_STABLE
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = 'v0.0.1';
+require_once(dirname(__FILE__).'/../classes/teslacelib/tesla_ce_lib.php');
+use tesla_ce_lib\TeSLACELib;
+global $CFG;
 
-$plugin->dependencies = [];
+$t_lib = TeSLACELib::getInstance();
 
-
+switch($_GET['type']) {
+    case 'course':
+        $course = unserialize($_GET['course']);
+        $vle_id = $_GET['vle_id'];
+        $t_lib->get_or_create_course($vle_id, $course, true);
+        break;
+    case 'activity':
+        $event = new stdClass();
+        $event->objectid = $_GET['instance_id'];
+        $t_lib->getTeSLAActivity()->create_or_update($event, true);
+        break;
+}
+header("Location: {$_SERVER['HTTP_REFERER']}");
+exit();
