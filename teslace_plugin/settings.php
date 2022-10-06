@@ -28,6 +28,15 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_teslace', get_string('pluginname', 'local_teslace'));
     $ADMIN->add('localplugins', $settings);
 
+    $tesla_status = TeSLACELib::getStatus();
+
+    $settings->add(
+        new admin_setting_description('local_teslace/tesla_status',
+            get_string('tesla_status', 'local_teslace'),
+            $tesla_status
+        )
+    );
+
     // Adding the standard "usetesla" field.
     $settings->add(
         new admin_setting_configcheckbox('local_teslace/usetesla', get_string('usetesla', 'local_teslace'),
@@ -37,6 +46,10 @@ if ($hassiteconfig) {
     $settings->add(
         new admin_setting_configcheckbox('local_teslace/enabletesladefault', get_string('enabletesladefault', 'local_teslace'),
             get_string('enabletesladefault_help', 'local_teslace'), '1'));
+
+    $settings->add(
+        new admin_setting_configcheckbox('local_teslace/verifyssl', get_string('verifyssl', 'local_teslace'),
+            get_string('verifyssl_help', 'local_teslace'), '1'));
 
     // Adding the standard "role" field.
     $settings->add(
@@ -85,4 +98,8 @@ if ($hassiteconfig) {
             'bottom-left'=>'Bottom Left',
         ))
     );
+
+
+
+
 }

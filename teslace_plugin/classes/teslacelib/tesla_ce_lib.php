@@ -42,12 +42,14 @@ class TeSLACELib{
     private $initialized = false;
     private $teslaCourse = null;
     private $teslaActivity = null;
+    private static $errors = '';
+    private $tesla_cache = null;
 
-    public static function getInstance() {
-        if (self::$instance === null) {
+    public static function getInstance($force_clear_cache = false) {
+        if (self::$instance === null || $force_clear_cache === true) {
             self::$instance = new TeSLACELib();
 
-            if (self::$instance->init() === false) {
+            if (self::$instance->init($force_clear_cache) === false) {
                 static::$instance = null;
             }
         }
@@ -55,14 +57,35 @@ class TeSLACELib{
         return static::$instance;
     }
 
+    public static function getStatus() {
+        $inst = self::getInstance(true);
+
+        if ($inst == null) {
+            $use_tesla = boolval(get_config('local_teslace', 'usetesla'));
+
+            if ($use_tesla == false) {
+                return '<div class="badge badge-info">TeSLA is not enabled</div>';
+            }
+
+            if (self::$errors != '') {
+                return '<div class="badge badge-danger">'.self::$errors.'</div>';
+            }
+            return '<div class="badge badge-danger">No connection to TeSLA</div>';
+        }
+
+        return '<div class="badge badge-success">Hurray! Moodle can connect with TeSLA system</div>';
+    }
+
     private function __construct() {}
     private function __clone(){}
 
-    private function init(){
+    private function init($force_clear_cache = false){
         $role = get_config('local_teslace', 'role');
         $secret = get_config('local_teslace', 'secret');
         $base_url = get_config('local_teslace', 'base_url');
         $debug = boolval(get_config('local_teslace', 'debug'));
+        $verify_ssl = boolval(get_config('local_teslace', 'verifyssl'));
+
         $this->common = new TeSLACELibCommon();
         $this->report_exception();
 
@@ -71,9 +94,14 @@ class TeSLACELib{
         }
 
         try {
-            $tesla_cache = new \tesla_ce\client\Cache(cache::make('local_teslace', 'tesla_ce_sdk'));
+            $this->tesla_cache = new \tesla_ce\client\Cache(cache::make('local_teslace', 'tesla_ce_sdk'));
 
-            $this->client = new Client($role, $secret, $base_url, !$debug, $tesla_cache);
+            $this->client = new Client($role, $secret, $base_url, $verify_ssl, $this->tesla_cache);
+
+            if ($force_clear_cache == true) {
+                $this->client->clearCache();
+                $this->client = new Client($role, $secret, $base_url, $verify_ssl, $this->tesla_cache);
+            }
 
             $this->teslaCourse = new TeslaCourse($this->client);
             $this->teslaActivity = new TeslaActivity($this->client, $this->common);
@@ -84,6 +112,7 @@ class TeSLACELib{
             if ($debug === true) {
                 mtrace("local_tesla_ce: ".$err->getMessage());
             }
+            static::$errors = $err->getMessage();
         }
 
         return $this->initialized;
@@ -144,13 +173,28 @@ class TeSLACELib{
             $course = $this->common->get_course_info();
 
             $tesla_course_id = $this->get_or_create_course($vle_id, $course);
+
+            if ($tesla_course_id === null) {
+                // course not present in TeSLA and it can not auto created.
+                // put the create course in TeSLA
+                if ($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true
+                    || $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id) === true) {
+                    $data = array(
+                        'course' => serialize($course),
+                        'vle_id' => $vle_id,
+                        'type' => 'course'
+                    );
+                    $create_course_url = new moodle_url('/local/teslace/views/create_resource_to_tesla.php', $data);
+                    $branch->add($this->common->get_string('create_course_tesla'), $create_course_url, $nav::TYPE_CONTAINER,
+                        null, 'tesla_ce_create_course_tesla_' . $course_id);
+                }
+                return;
+            }
             $this->add_user_to_course($course_id, $vle_id, $tesla_course_id);
 
             $my_tesla_url = $this->generate_url_dashboard(null, 'my_tesla', $tesla_course_id, $course_id);
             $branch->add($this->common->get_string('my_tesla_title'), $my_tesla_url, $nav::TYPE_CONTAINER,
                 null, 'tesla_ce_my_tesla_' . $course_id);
-
-
 
             $is_student = $this->common->is_user_with_role($course_id, TeSLACELibCommon::ROLE_STUDENT, $USER->id);
 
@@ -182,6 +226,19 @@ class TeSLACELib{
                         $my_tesla_url = $this->generate_url_dashboard($tesla_activity_id, 'activity_report', $tesla_course_id, $course_id);
                         $branch->add($this->common->get_string('tesla_activity_report'), $my_tesla_url, $nav::TYPE_CONTAINER,
                             array('target'=>'_blank'), 'tesla_ce_my_tesla_activity_report_' . $course_id);
+                    } else {
+                        if ($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true
+                            || $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id) === true) {
+
+                            $data = array(
+                                'instance_id' => $instance_id,
+                                'vle_id' => $vle_id,
+                                'type' => 'activity'
+                            );
+                            $create_activity_url = new moodle_url('/local/teslace/views/create_resource_to_tesla.php', $data);
+                            $branch->add($this->common->get_string('create_activity_tesla'), $create_activity_url, $nav::TYPE_CONTAINER,
+                                null, 'tesla_ce_create_activity_tesla_' . $course_id);
+                        }
                     }
                 }
             }
@@ -205,6 +262,11 @@ class TeSLACELib{
                 $vle_id = $this->client->getVleId();
                 // get course
                 $course_id = $this->get_or_create_course($vle_id, $course);
+                if ($course_id === null) {
+                    // course not present in TeSLA and it can not auto created.
+                    return;
+                }
+
                 $redirect_reject_url = null;
                 $locale = $this->common->get_current_language();
 
@@ -278,10 +340,15 @@ class TeSLACELib{
         return null;
     }
 
-    private function get_or_create_course($vle_id, $course) {
+    public function get_or_create_course($vle_id, $course, $force_create=false) {
         $response = $this->client->getCourse()->getByVleCourseId($vle_id, $course['id']);
 
         if ($response['headers']['http_code'] == 200 && $response['content']['count'] == 0) {
+            $allow_course_autocreation = boolval(get_config('local_teslace', 'enabletesladefault'));
+            if (!$allow_course_autocreation && $force_create === false) {
+                return null;
+            }
+
             $response = $this->client->getCourse()->create($vle_id, $course['name'], $course['id'],
                 $course['description'], $course['start_at'], $course['end_at'] );
             $tesla_course_id = $response['content']['id'];
@@ -321,8 +388,6 @@ class TeSLACELib{
         header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id, $vle_course_id)->out()));
         die();
     }
-
-
 
     public function report_exception() {
         // Sentry\init(['dsn' => 'https://a4de765bb10b4972986beb6e17dfd4ab@sentry.sunai.uoc.edu/6' ]);

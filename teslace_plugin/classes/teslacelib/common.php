@@ -37,13 +37,6 @@ class Common {
             return false;
         }
 
-        // todo: is this parameter necessary?
-        $enable_tesla_default = boolval(get_config('local_teslace', 'enabletesladefault'));
-
-        if (!$enable_tesla_default) {
-            return false;
-        }
-
         return true;
     }
 
