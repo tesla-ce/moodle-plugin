@@ -266,6 +266,9 @@ class TeslaActivity
         }
         $session_id = $request->session_id;
 
+        $created = \DateTime::createFromFormat('U', $request->created);
+        $data['metadata']['created_at'] = $created->format(\DateTime::ISO8601);
+
         $response = $this->client->getVerification()->sendActivityDocument(
             $vle_id,
             $learner_id,
