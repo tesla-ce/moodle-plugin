@@ -33,7 +33,7 @@ file_env 'SECRET_ID'
 mkdir -p /var/moodledata
 chown -R www-data:www-data /var/moodledata
 
-/etc/init.d/php7.3-fpm stop && /etc/init.d/php7.3-fpm start
+/etc/init.d/php7.4-fpm stop && /etc/init.d/php7.4-fpm start
 
 /bin/bash /wait_for_it.sh "${MOODLE_DBHOST}":"${MOODLE_DBPORT}" -- echo "Database is up"
 

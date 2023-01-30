@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ ubuntu-latest ] #, windows-latest, macos-latest ]
-        php-versions: [ '7.3', '7.4' ]
+        php-versions: [ '7.4' ]
     runs-on: ${{ matrix.operating-system }}
     services:
       # Label used to access the service container
@@ -129,7 +129,7 @@ jobs:
           env_vars: OS,PHP
           files: /var/www/html/coverage.xml
       - name: Fossa update license analysis
-        if: matrix.php-versions == '7.3'
+        if: matrix.php-versions == '7.4'
         uses: fossa-contrib/fossa-action@v1
         continue-on-error: true
         with:
@@ -140,7 +140,7 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ ubuntu-latest ] #, windows-latest, macos-latest ]
-        php-versions: [ '7.3' ]
+        php-versions: [ '7.4' ]
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout
