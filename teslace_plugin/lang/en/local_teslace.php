@@ -51,6 +51,8 @@ $string['auto_enrol_instructor_help'] = 'Auto enrol instructor when he/she enter
 $string['cachedef_tesla_ce_sdk'] = 'This cache is used to cache the configuration of TeSLA CE local plugin';
 $string['floating_menu_initial_pos'] = 'Floating menu initial position';
 $string['floating_menu_initial_pos_help'] = 'Where will floating menu be placed initially?';
+$string['only_manager_create_courses'] = 'Only managers can create courses in TeSLA system';
+$string['only_manager_create_courses_help'] = "If course not present in TeSLA, only managers can create courses. TeSLA buttons only appears on administration role";
 
 $string['tesla_status'] = 'TeSLA status';
 $string['verifyssl'] = 'Verify SSL certificates';

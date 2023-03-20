@@ -81,6 +81,7 @@ if ($hassiteconfig) {
         new admin_setting_configcheckbox('local_teslace/auto_enrol_learner',
             get_string('auto_enrol_learner', 'local_teslace'),
             get_string('auto_enrol_learner_help', 'local_teslace'), '1'));
+
     $settings->add(
         new admin_setting_configcheckbox('local_teslace/auto_enrol_instructor',
             get_string('auto_enrol_instructor', 'local_teslace'),
@@ -99,6 +100,10 @@ if ($hassiteconfig) {
         ))
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox('local_teslace/only_manager_create_courses',
+            get_string('only_manager_create_courses', 'local_teslace'),
+            get_string('only_manager_create_courses_help', 'local_teslace'), '0'));
 
 
 

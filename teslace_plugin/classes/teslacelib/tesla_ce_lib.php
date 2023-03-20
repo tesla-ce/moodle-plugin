@@ -173,12 +173,30 @@ class TeSLACELib{
             $course = $this->common->get_course_info();
 
             $tesla_course_id = $this->get_or_create_course($vle_id, $course);
+            // var_dump($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id)); die();
 
             if ($tesla_course_id === null) {
                 // course not present in TeSLA and it can not auto created.
                 // put the create course in TeSLA
+                // ONLY if ROLE_ADMIN is granted. Instructors don't see any TeSLA button if course is not created in TeSLA
+                /*
                 if ($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true
                     || $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id) === true) {
+                */
+
+                $this->common->get_course_info();
+
+                $only_manager_create_courses = boolval(get_config('local_teslace', 'only_manager_create_courses'));
+                $please_create_course = false;
+
+                if ($only_manager_create_courses === true && $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id)) {
+                    $please_create_course = true;
+                } elseif($only_manager_create_courses === false && ($this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_INSTRUCTOR, $USER->id) === true
+                    || $this->common->is_user_with_role($course['id'], TeSLACELibCommon::ROLE_ADMIN, $USER->id) === true)) {
+                    $please_create_course = true;
+                }
+
+                if ($please_create_course) {
                     $data = array(
                         'course' => serialize($course),
                         'vle_id' => $vle_id,
@@ -190,6 +208,7 @@ class TeSLACELib{
                 }
                 return;
             }
+
             $this->add_user_to_course($course_id, $vle_id, $tesla_course_id);
 
             $my_tesla_url = $this->generate_url_dashboard(null, 'my_tesla', $tesla_course_id, $course_id);
@@ -387,6 +406,10 @@ class TeSLACELib{
     private function go_to_url_dashboard($instance_id, $context, $course_id, $vle_course_id) {
         header("Location:".htmlspecialchars_decode($this->generate_url_dashboard($instance_id, $context, $course_id, $vle_course_id)->out()));
         die();
+    }
+
+    public function is_debug() {
+        return boolval(get_config('local_teslace', 'debug'));
     }
 
     public function report_exception() {

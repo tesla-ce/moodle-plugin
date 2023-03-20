@@ -33,6 +33,10 @@ $response = $t_lib->client->getVle()->getLauncher($t_lib->client->getVleId(), $l
 
 if (!isset($response['content']['url'])) {
     echo "My TeSLA is not available.";
+
+    if ($t_lib->is_debug() === true) {
+        print_r($response);
+    }
     die();
 }
 
@@ -88,7 +92,7 @@ switch($_GET['context']) {
 
 $url = $url.'?'.http_build_query($params,'', '&');
 
-$url = str_replace('https://dev.tesla-ce.eu', 'http://localhost:4200', $url);
+// $url = str_replace('https://dev.tesla-ce.eu', 'http://localhost:4200', $url);
 // var_dump($url); die();
 
 header("Location: {$url}");
