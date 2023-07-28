@@ -51,6 +51,7 @@ jobs:
           MYSQL_DATABASE: tesla
           MYSQL_USER: tesla
           MYSQL_PASSWORD: tesla-password
+          MARIADB_MYSQL_LOCALHOST_USER: 1
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 5s
