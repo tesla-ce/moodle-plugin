@@ -124,13 +124,13 @@ class TeslaActivity
             'type'=>$activityType
         );
         $assessment_id = $this->common->getAssessmentId($activity);
-        /*
+
         if ($assessment_id != null) {
             $vle_id = $this->client->getVleId();
             $this->client->getAssessment()->close($vle_id, $assessment_id);
             $this->common->clearAssessmentId($activity);
         }
-        */
+
         // check if $user is student
         if ($this->common->is_user_with_role($courseId, Common::ROLE_STUDENT, $USER->id) === true) {
             // check if this submission is in queue
@@ -168,6 +168,7 @@ class TeslaActivity
             $dataobject->created = time();
             $dataobject->modified = time();
             $dataobject->session_id = $assessment_id;
+
             return $DB->insert_record('local_teslace_pend_requests', $dataobject, $returnid = true, $bulk = false);
         }
 
