@@ -91,7 +91,7 @@ jobs:
           rm -rf /var/www/html
           mkdir -p /var/www/html
           cd /var/www/html
-          git clone -b 'v3.9.4' --single-branch git://git.moodle.org/moodle.git .
+          git clone -b 'v4.1.1' --single-branch git://git.moodle.org/moodle.git .
 
           cp teslace_plugin /var/www/html/local/teslace
 
